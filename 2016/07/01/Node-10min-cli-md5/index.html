@@ -1,0 +1,797 @@
+<!doctype html>
+
+
+
+
+<html class="theme-next mist">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Node.js,JavaScript," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="xn4545945" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="今天做存储密码功能时，想在命令行测试下md5生成的字符串，于是找工具，试了一两个，不好用。决定自己做一个。初步的功能不必多，就是输入md5 “astring”，输出md5的结果即可。十分简单。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="10分钟搞定一个漂亮的Node命令行工具">
+<meta property="og:url" content="http://blog.xigulu.com/2016/07/01/Node-10min-cli-md5/index.html">
+<meta property="og:site_name" content="xn4545945">
+<meta property="og:description" content="今天做存储密码功能时，想在命令行测试下md5生成的字符串，于是找工具，试了一两个，不好用。决定自己做一个。初步的功能不必多，就是输入md5 “astring”，输出md5的结果即可。十分简单。">
+<meta property="og:image" content="http://7xlwuv.com1.z0.glb.clouddn.com/tools-cli-md5.png">
+<meta property="og:updated_time" content="2016-08-16T17:25:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="10分钟搞定一个漂亮的Node命令行工具">
+<meta name="twitter:description" content="今天做存储密码功能时，想在命令行测试下md5生成的字符串，于是找工具，试了一两个，不好用。决定自己做一个。初步的功能不必多，就是输入md5 “astring”，输出md5的结果即可。十分简单。">
+<meta name="twitter:image" content="http://7xlwuv.com1.z0.glb.clouddn.com/tools-cli-md5.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: "post",
+    fancybox: true,
+    motion: false,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> 10分钟搞定一个漂亮的Node命令行工具 | xn4545945 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="http://s6.cnzz.com/stat.php?id=1258349700&web_id=1258349700" type="text/javascript"></script>
+  </div>
+
+
+
+
+
+  
+  
+
+  <div class="container one-collumn  page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">xn4545945</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-learning">
+          <a href="/learning" rel="section">
+            
+              <i class="menu-item-icon fa fa-mortar-board fa-fw"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-opensource">
+          <a href="/opensource" rel="section">
+            
+              <i class="menu-item-icon fa fa-github-alt fa-fw"></i> <br />
+            
+            开源
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                10分钟搞定一个漂亮的Node命令行工具
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-01T00:00:00+08:00" content="2016-07-01">
+              2016-07-01
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/01/Node-10min-cli-md5/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/01/Node-10min-cli-md5/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/07/01/Node-10min-cli-md5/" class="leancloud_visitors" data-flag-title="10分钟搞定一个漂亮的Node命令行工具">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+
+
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>今天做存储密码功能时，想在命令行测试下md5生成的字符串，于是找工具，试了一两个，不好用。决定自己做一个。初步的功能不必多，就是输入md5 “astring”，输出md5的结果即可。十分简单。</p>
+<a id="more"></a>
+<hr>
+<blockquote>
+<p><strong>扩展</strong>：Linux、Mac下用python或其他任意语言，写个生成md5字符串的脚本。然后软连接到环境变量的目录中，配置一下alias也可以很简单，几分钟搞定。</p>
+</blockquote>
+<p>nodejs的优势在于跨平台，一键安装。</p>
+<p>本项目源码发布到npm了，后续会添加更多功能。(以最终安装的源码为准) <a href="https://www.npmjs.com/package/tools-cli" target="_blank" rel="external">https://www.npmjs.com/package/tools-cli</a></p>
+<p><strong>安装</strong>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install tools-cli -g</div></pre></td></tr></table></figure>
+<p><strong>使用</strong>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">md5 yourstring</div></pre></td></tr></table></figure>
+<p><strong>运行截图</strong>：</p>
+<p><img src="http://7xlwuv.com1.z0.glb.clouddn.com/tools-cli-md5.png" alt=""></p>
+<h2 id="相关库介绍"><a href="#相关库介绍" class="headerlink" title="相关库介绍"></a>相关库介绍</h2><h3 id="commander-js"><a href="#commander-js" class="headerlink" title="commander.js"></a>commander.js</h3><p>用于简化node命令行编写。提供方便出参数设置，帮助信息设置等。<br><a href="https://github.com/tj/commander.js" target="_blank" rel="external">https://github.com/tj/commander.js</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install commander --save</div></pre></td></tr></table></figure></p>
+<h3 id="colors-js"><a href="#colors-js" class="headerlink" title="colors.js"></a>colors.js</h3><p>用于命令行作色<br><a href="https://github.com/Marak/colors.js" target="_blank" rel="external">https://github.com/Marak/colors.js</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install colors --save</div></pre></td></tr></table></figure></p>
+<h3 id="node-md5"><a href="#node-md5" class="headerlink" title="node-md5"></a>node-md5</h3><p>md5字符串生成。<br><a href="https://github.com/pvorb/node-md5" target="_blank" rel="external">https://github.com/pvorb/node-md5</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install md5 --save</div></pre></td></tr></table></figure>
+<h2 id="编写代码"><a href="#编写代码" class="headerlink" title="编写代码"></a>编写代码</h2><h3 id="主要代码"><a href="#主要代码" class="headerlink" title="主要代码"></a>主要代码</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#!/usr/bin/env node</span></div><div class="line"></div><div class="line"><span class="keyword">var</span> md5 = <span class="built_in">require</span>(<span class="string">'md5'</span>);</div><div class="line"><span class="keyword">var</span> colors = <span class="built_in">require</span>(<span class="string">'colors'</span>);</div><div class="line"><span class="keyword">var</span> program = <span class="built_in">require</span>(<span class="string">'commander'</span>);</div><div class="line"></div><div class="line">program</div><div class="line">    .version(<span class="string">'v'</span> + <span class="built_in">require</span>(<span class="string">'../package.json'</span>).version)</div><div class="line">    .description(<span class="string">'a md5 cli tool.'</span>)</div><div class="line">    .arguments(<span class="string">'[string]'</span>)</div><div class="line">    .option(<span class="string">'-s, --string'</span>, <span class="string">'input a string'</span>)</div><div class="line">    .parse(process.argv);</div><div class="line"></div><div class="line"><span class="keyword">if</span> (program.args.length == <span class="number">1</span>) &#123;</div><div class="line">    <span class="built_in">console</span>.log(program.args[<span class="number">0</span>] + <span class="string">' &gt; MD5 Output:'</span>.rainbow);</div><div class="line">    <span class="built_in">console</span>.log(md5(program.args[<span class="number">0</span>]).underline.red);</div><div class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (program.string) &#123;</div><div class="line">    <span class="built_in">console</span>.log(program.string + <span class="string">' &gt; MD5 Output:'</span>.rainbow);</div><div class="line">    <span class="built_in">console</span>.log(md5(program.string).underline.red);</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'ERROR input!!!'</span>.rainbow);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="整合系统环境"><a href="#整合系统环境" class="headerlink" title="整合系统环境"></a>整合系统环境</h2><h3 id="将写的脚本整合到系统命令"><a href="#将写的脚本整合到系统命令" class="headerlink" title="将写的脚本整合到系统命令"></a>将写的脚本整合到系统命令</h3><p>1.源文件头部添加一行shell头：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">#! /usr/bin/env node</div></pre></td></tr></table></figure></p>
+<p>2.再配置package.json        </p>
+<blockquote>
+<p>主要是添加这个: “bin”: { “md5”: “yourjs.js” }</p>
+</blockquote>
+<p>3.执行本地链接命令(当前目录下运行)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm link</div></pre></td></tr></table></figure></p>
+<h2 id="发布到npm"><a href="#发布到npm" class="headerlink" title="发布到npm"></a>发布到npm</h2><p>发布前最重要的是配置package.json文件。</p>
+<p>关于package.json文件配置，可以安装tools-cli后，打开安装路查看。</p>
+<h3 id="基本流程"><a href="#基本流程" class="headerlink" title="基本流程"></a>基本流程</h3><p>1.注册个账号        <a href="https://www.npmjs.com/" target="_blank" rel="external">https://www.npmjs.com/</a><br>2.执行命令 (最重要的是package.json文件里面的配置)</p>
+<blockquote>
+<p>npm init        (创建及配置package.json)<br>npm adduser     添加账户<br>npm config set registry <a href="http://registry.npmjs.org" target="_blank" rel="external">http://registry.npmjs.org</a>       切换回默认的源(如果切换了淘宝源的话)<br>npm publish                         发布模块. (写好代码与package.josn后, 同步也用这个)<br>npm unpublish 模块名 –force         删除已经发布的模块<br>npm whoami              查看当前登录的用户</p>
+</blockquote>
+<h3 id="相关错误"><a href="#相关错误" class="headerlink" title="相关错误"></a>相关错误</h3><p>报错: You do not have permission to publish ‘somepackage’.Are you logged in as the corrent user?<br><strong>原因</strong>: 你发布的包名和别人的重名了.<br><strong>解决</strong>: 修改了package.json文件的name选项.</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+<div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center">
+  <div>转载请注明出处，有疑问欢迎留言！</div>
+  <button id="rewardButton", disable="enable", onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}", style="cursor: pointer; border: 0; outline: 0; border-radius: 100%; padding: 0; margin: 0; letter-spacing: normal; text-transform: none; text-indent: 0px; text-shadow: none">
+    <span onmouseover="this.style.color='rgb(236,96,0)';this.style.background='rgb(204,204,204)'" onMouseOut="this.style.color='#fff';this.style.background='rgb(236,96,0)'" style="display: inline-block; width: 70px; height: 70px; border-radius: 100%; line-height: 81px; color: #fff; font: 400 35px/75px 'microsofty'; background: rgb(236,96,0)">赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/wechatpay.png" alt="xn4545945 WeChat Pay" style="width: 200px; max-width: 100%; display: inline-block"/>
+        <p>微信打赏</p>
+      </div>
+    
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/alipay.png" alt="xn4545945 Alipay" style="width: 200px; max-width: 100%; display: inline-block"/>
+        <p>支付宝打赏</p>
+      </div>
+    
+  </div>
+</div>
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Node-js/" rel="tag">#Node.js</a>
+          
+            <a href="/tags/JavaScript/" rel="tag">#JavaScript</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/18/SHELL_Tools_sshrc_bashmarks/" rel="next" title="SHELL中使用sshrc与bashmarks">
+                <i class="fa fa-chevron-left"></i> SHELL中使用sshrc与bashmarks
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/08/iOS-Swift3-feature/" rel="prev" title="【iOS】Swift3中的一些变化">
+                【iOS】Swift3中的一些变化 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/07/01/Node-10min-cli-md5/"
+     data-title="10分钟搞定一个漂亮的Node命令行工具"
+     data-content=""
+     data-url="http://blog.xigulu.com/2016/07/01/Node-10min-cli-md5/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/07/01/Node-10min-cli-md5/"
+           data-title="10分钟搞定一个漂亮的Node命令行工具" data-url="http://blog.xigulu.com/2016/07/01/Node-10min-cli-md5/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/avtar.jpg"
+               alt="xn4545945" />
+          <p class="site-author-name" itemprop="name">xn4545945</p>
+          <p class="site-description motion-element" itemprop="description">Knowledge is gained by accumulation!</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">21</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xn4545945" target="_blank">
+                  
+                    <i class="fa fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/xuneng007" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        <div class="links-of-blogroll motion-element">
+          
+            <div class="links-of-blogroll-title">Links</div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://xigulu.com/" target="_blank">私语app</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.csdn.net/xn4545945" target="_blank">我的CSDN</a>
+                </li>
+              
+            </ul>
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#相关库介绍"><span class="nav-number">1.</span> <span class="nav-text">相关库介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#commander-js"><span class="nav-number">1.1.</span> <span class="nav-text">commander.js</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#colors-js"><span class="nav-number">1.2.</span> <span class="nav-text">colors.js</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#node-md5"><span class="nav-number">1.3.</span> <span class="nav-text">node-md5</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编写代码"><span class="nav-number">2.</span> <span class="nav-text">编写代码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#主要代码"><span class="nav-number">2.1.</span> <span class="nav-text">主要代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#整合系统环境"><span class="nav-number">3.</span> <span class="nav-text">整合系统环境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#将写的脚本整合到系统命令"><span class="nav-number">3.1.</span> <span class="nav-text">将写的脚本整合到系统命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发布到npm"><span class="nav-number">4.</span> <span class="nav-text">发布到npm</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本流程"><span class="nav-number">4.1.</span> <span class="nav-text">基本流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#相关错误"><span class="nav-number">4.2.</span> <span class="nav-text">相关错误</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+ 
+  <span class="author" itemprop="copyrightHolder">xn4545945</span>
+  <span class="author" itemprop="copyrightHolder">&nbsp;每周坚持更新,欢迎收藏订阅</span>
+
+  <span class="author" itemprop="copyrightHolder">
+	&nbsp;(Powered &nbsp; by <a href="http://hexo.io">Hexo</a>,&nbsp;
+	Theme &nbsp;<a href="https://github.com/iissnan/hexo-theme-next">NexT</a>)
+  </span>
+  
+</div>
+
+<div class="theme-info">
+  Knowledge is gained by accumulation!
+  <span id="busuanzi_container_site_pv">
+    &nbsp;|&nbsp; Total visited &nbsp;<span id="busuanzi_value_site_pv"></span>&nbsp; times.
+  </span>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+
+  
+
+
+
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.4.5.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.4.5.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=0.4.5.2"></script>
+<script type="text/javascript" src="/vendors/jquery-scrollintoview/jquery.scrollintoview.min.js?v=0.4.5.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=0.4.5.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.4.5.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"xn4545945"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("L3AnonOM7IYxxV8IY6kFnbB1-gzGzoHsz", "ohuc6VwpQ1SlBUgCwPRr0Qqj");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+
+</body>
+</html>

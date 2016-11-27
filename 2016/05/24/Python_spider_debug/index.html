@@ -1,0 +1,779 @@
+<!doctype html>
+
+
+
+
+<html class="theme-next mist">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Python," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="xn4545945" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="最近想抓一点其他网站的内容，但是用PHP做感觉有点奇怪，单纯用正则表达式也比较不便。于是狠补了下Python的内容，虽然基本原理都是下载-&amp;gt;分析-&amp;gt;提取-&amp;gt;存储，但Python里面的3方包等工具还是相对健全很多，如BeautifulSoup就十分好用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python爬取本博客首页与调试">
+<meta property="og:url" content="http://blog.xigulu.com/2016/05/24/Python_spider_debug/index.html">
+<meta property="og:site_name" content="xn4545945">
+<meta property="og:description" content="最近想抓一点其他网站的内容，但是用PHP做感觉有点奇怪，单纯用正则表达式也比较不便。于是狠补了下Python的内容，虽然基本原理都是下载-&amp;gt;分析-&amp;gt;提取-&amp;gt;存储，但Python里面的3方包等工具还是相对健全很多，如BeautifulSoup就十分好用。">
+<meta property="og:updated_time" content="2016-08-16T17:25:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python爬取本博客首页与调试">
+<meta name="twitter:description" content="最近想抓一点其他网站的内容，但是用PHP做感觉有点奇怪，单纯用正则表达式也比较不便。于是狠补了下Python的内容，虽然基本原理都是下载-&amp;gt;分析-&amp;gt;提取-&amp;gt;存储，但Python里面的3方包等工具还是相对健全很多，如BeautifulSoup就十分好用。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: "post",
+    fancybox: true,
+    motion: false,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> Python爬取本博客首页与调试 | xn4545945 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="http://s6.cnzz.com/stat.php?id=1258349700&web_id=1258349700" type="text/javascript"></script>
+  </div>
+
+
+
+
+
+  
+  
+
+  <div class="container one-collumn  page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">xn4545945</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-learning">
+          <a href="/learning" rel="section">
+            
+              <i class="menu-item-icon fa fa-mortar-board fa-fw"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-opensource">
+          <a href="/opensource" rel="section">
+            
+              <i class="menu-item-icon fa fa-github-alt fa-fw"></i> <br />
+            
+            开源
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Python爬取本博客首页与调试
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-05-24T00:00:00+08:00" content="2016-05-24">
+              2016-05-24
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/05/24/Python_spider_debug/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/24/Python_spider_debug/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/05/24/Python_spider_debug/" class="leancloud_visitors" data-flag-title="Python爬取本博客首页与调试">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+
+
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近想抓一点其他网站的内容，但是用PHP做感觉有点奇怪，单纯用正则表达式也比较不便。于是狠补了下Python的内容，虽然基本原理都是下载-&gt;分析-&gt;提取-&gt;存储，但Python里面的3方包等工具还是相对健全很多，如BeautifulSoup就十分好用。<br><a id="more"></a></p>
+<hr>
+<h2 id="简单爬虫"><a href="#简单爬虫" class="headerlink" title="简单爬虫"></a>简单爬虫</h2><p>写的尽量简单点，用到re，BeautifulSoup，urllib2等模块。不包含URL管理器等。</p>
+<h3 id="博客页面分析"><a href="#博客页面分析" class="headerlink" title="博客页面分析"></a>博客页面分析</h3><p>以抓取本博客<a href="http://blog.xigulu.com/">http://blog.xigulu.com/</a>为例。提取出首页标题及摘要内容，最后将提取的内容写入html。</p>
+<p>审查网页源码，可以发现：<br>标题部分：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">h1</span> <span class="attr">class</span>=<span class="string">"post-title"</span> <span class="attr">itemprop</span>=<span class="string">"name headline"</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">"post-title-link"</span> <span class="attr">href</span>=<span class="string">"/2016/05/12/php_route_url_pretty/"</span> <span class="attr">itemprop</span>=<span class="string">"url"</span>&gt;</span></div><div class="line">        PHP单一入口模式及URL路由美化</div><div class="line">   <span class="tag">&lt;/<span class="name">a</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">h1</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>摘要部分：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"post-body"</span> <span class="attr">itemprop</span>=<span class="string">"articleBody"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>大部分PHP框架都是基于单一入口模式，如yii，ci，slim等框架中都有实现，且配置都非常简单。最近想把自己以前写的一个零散的项目整理成单一入口模式，于是研究了下，实现了基本可用的功能。包括URL路由，美化功能。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"post-more-link text-center"</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">"btn"</span> <span class="attr">href</span>=<span class="string">"/2016/05/12/php_route_url_pretty/#more"</span> <span class="attr">rel</span>=<span class="string">"contents"</span>&gt;</span></div><div class="line">              阅读全文 »</div><div class="line">        <span class="tag">&lt;/<span class="name">a</span>&gt;</span></div><div class="line">     <span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>爬取过程：</p>
+<ul>
+<li>先使用urllib2下载网页</li>
+<li>分析下载的网页，使用BeautifulSoup + 正则 提取想要的内容</li>
+<li>输出html</li>
+</ul>
+<h3 id="爬取并显示"><a href="#爬取并显示" class="headerlink" title="爬取并显示"></a>爬取并显示</h3><p>主要代码如下。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#coding=utf-8</span></div><div class="line"></div><div class="line"><span class="comment">#抓取http://blog.xigulu.com/首页的标题及摘要内容</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> bs4</div><div class="line"><span class="keyword">import</span> re</div><div class="line"><span class="keyword">import</span> urllib2</div><div class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">MySpider</span>:</span></div><div class="line">    <span class="comment">#下载html</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">download_html</span><span class="params">(self,url)</span>:</span></div><div class="line">        <span class="keyword">print</span> <span class="string">"start download_html:"</span></div><div class="line">        response = urllib2.urlopen(url)</div><div class="line">        <span class="keyword">if</span> response.getcode() != <span class="number">200</span>:</div><div class="line">            <span class="keyword">return</span> <span class="keyword">None</span></div><div class="line">        <span class="keyword">print</span> <span class="string">"finish download_html!"</span></div><div class="line">        <span class="keyword">return</span> response.read()</div><div class="line">    </div><div class="line">    <span class="comment">#解析html</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">parser_html</span><span class="params">(self,html_str)</span>:</span></div><div class="line">        <span class="keyword">print</span> <span class="string">"start parser_html:"</span></div><div class="line">        result_list = []  <span class="comment">#结果存放到list中, list元素为字典</span></div><div class="line">        soup = BeautifulSoup(html_str, <span class="string">"html.parser"</span>, from_encoding=<span class="string">"utf-8"</span>)</div><div class="line">        </div><div class="line">        <span class="string">'''</span></div><div class="line">        &lt;h1 class="post-title" itemprop="name headline"&gt;</div><div class="line">            &lt;a class="post-title-link" href="/2016/05/12/php_route_url_pretty/" itemprop="url"&gt;</div><div class="line">                PHP单一入口模式及URL路由美化</div><div class="line">            &lt;/a&gt;</div><div class="line">        &lt;/h1&gt;</div><div class="line">        '''</div><div class="line">        <span class="comment">#title_nodes = soup.find_all('a', class_="post-title-link")</span></div><div class="line">        title_nodes = soup.select(<span class="string">"h1.post-title a.post-title-link"</span>)</div><div class="line">        </div><div class="line">        <span class="string">'''</span></div><div class="line">        &lt;div class="post-body" itemprop="articleBody"&gt;</div><div class="line">          &lt;p&gt;大部分PHP框架都是基于单一入口模式，如yii，ci，slim等框架中都有实现，且配置都非常简单。最近想把自己以前写的一个零散的项目整理成单一入口模式，于是研究了下，实现了基本可用的功能。包括URL路由，美化功能。&lt;/p&gt;</div><div class="line">          &lt;div class="post-more-link text-center"&gt;</div><div class="line">            &lt;a class="btn" href="/2016/05/12/php_route_url_pretty/#more" rel="contents"&gt;</div><div class="line">                            阅读全文 »</div><div class="line">            &lt;/a&gt;</div><div class="line">          &lt;/div&gt;</div><div class="line">        &lt;/div&gt;</div><div class="line">        '''</div><div class="line">        <span class="comment">#summary_nodes = soup.find_all('div', class_="post-body")</span></div><div class="line">        summary_nodes = soup.select(<span class="string">"div.post-body p"</span>)   <span class="comment">#这里通过select来操作, 比find方法更好</span></div><div class="line">        <span class="comment">#下载的html中, 几个p标签未闭合. 导致带上了" 阅读全文 »"</span></div><div class="line"></div><div class="line">        <span class="keyword">for</span> index <span class="keyword">in</span> range(len(title_nodes)):</div><div class="line">            result_data = &#123;&#125;</div><div class="line">            result_data[<span class="string">'title'</span>] = title_nodes[index].get_text() </div><div class="line">            result_data[<span class="string">'summary'</span>] = summary_nodes[index].get_text()</div><div class="line">            <span class="comment">#result_data['summary'] = summary_nodes[index].find('p').get_text()</span></div><div class="line">            result_list.append(result_data)</div><div class="line">        </div><div class="line">        <span class="keyword">print</span> <span class="string">"finish parser_html!"</span></div><div class="line">        <span class="keyword">return</span> result_list</div><div class="line">        </div><div class="line">        </div><div class="line">    <span class="comment">#结果存为htnl展示</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">save2html</span><span class="params">(self,list_data)</span>:</span></div><div class="line">        out_html = open(<span class="string">'output.html'</span>, <span class="string">'w'</span>)</div><div class="line">        <span class="keyword">print</span> <span class="string">"start save2html:"</span></div><div class="line">        out_html.write(<span class="string">"&lt;html&gt;"</span>)</div><div class="line">        out_html.write(<span class="string">"&lt;table style='border:1px solid #000'&gt;"</span>)</div><div class="line">        <span class="keyword">for</span> data <span class="keyword">in</span> list_data:</div><div class="line">            out_html.write(<span class="string">"&lt;tr&gt;"</span>)</div><div class="line">            out_html.write(<span class="string">"&lt;td style='border:1px solid #000'&gt;%s&lt;/td&gt;"</span> % data[<span class="string">'title'</span>].encode(<span class="string">'utf8'</span>))</div><div class="line">            out_html.write(<span class="string">"&lt;td style='border:1px solid #000'&gt;%s&lt;/td&gt;"</span> % data[<span class="string">'summary'</span>].encode(<span class="string">'utf8'</span>))</div><div class="line">            out_html.write(<span class="string">"&lt;/tr&gt;"</span>)</div><div class="line">        out_html.write(<span class="string">"&lt;/table&gt;"</span>)</div><div class="line">        out_html.write(<span class="string">"&lt;/html&gt;"</span>)</div><div class="line">        out_html.close()</div><div class="line">        <span class="keyword">print</span> <span class="string">"finish save2html!"</span></div><div class="line">    </div><div class="line">    </div><div class="line"><span class="comment">#测试</span></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</div><div class="line">    </div><div class="line">    mysapider = MySpider()</div><div class="line">    </div><div class="line">    url = <span class="string">"http://blog.xigulu.com/"</span></div><div class="line">    html_str = mysapider.download_html(url)</div><div class="line">    <span class="comment">#print html_str</span></div><div class="line">    list_data = mysapider.parser_html(html_str)</div><div class="line">    mysapider.save2html(list_data)</div></pre></td></tr></table></figure></p>
+<p>说明见注释。</p>
+<h2 id="调试类"><a href="#调试类" class="headerlink" title="调试类"></a>调试类</h2><p>出于经常需要调试与输出数据，于是写了个简单的调试类。（复杂一点的还是用PyDev或PyCharm集成开发环境调试更好）</p>
+<p>直接贴代码：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#coding=utf-8</span></div><div class="line"><span class="keyword">from</span> ipdb <span class="keyword">import</span> set_trace</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">XNDebug</span>:</span></div><div class="line">    <span class="comment">#is 与  == 的区别就是is根据id, ==根据值 判断.</span></div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        self.debugStatus = <span class="keyword">True</span>  <span class="comment">#False</span></div><div class="line"></div><div class="line">    </div><div class="line">    <span class="comment">#打印list</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">logList</span><span class="params">(self,varlist)</span>:</span></div><div class="line">        <span class="keyword">if</span> self.debugStatus != <span class="keyword">True</span>:</div><div class="line">            <span class="keyword">return</span></div><div class="line">        </div><div class="line">        <span class="keyword">if</span> varlist <span class="keyword">is</span> <span class="keyword">None</span> <span class="keyword">or</span> <span class="keyword">not</span> varlist:</div><div class="line">            <span class="keyword">print</span> <span class="string">"logList--&gt; is None"</span></div><div class="line">        <span class="keyword">elif</span> type(varlist) == list:</div><div class="line">            <span class="keyword">for</span> index <span class="keyword">in</span> range(len(varlist)):</div><div class="line">                <span class="keyword">print</span> <span class="string">"logList[%d]--&gt;%s"</span>%(index,varlist[index])</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            <span class="keyword">print</span> <span class="string">"logList--&gt; not list type!"</span></div><div class="line">        </div><div class="line">                </div><div class="line">    <span class="comment">#打印字典</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">logDict</span><span class="params">(self,varDict)</span>:</span></div><div class="line">        <span class="keyword">if</span> self.debugStatus != <span class="keyword">True</span>:</div><div class="line">            <span class="keyword">return</span></div><div class="line">        </div><div class="line">        <span class="keyword">if</span> varDict <span class="keyword">is</span> <span class="keyword">None</span> <span class="keyword">or</span> <span class="keyword">not</span> varDict:</div><div class="line">            <span class="keyword">print</span> <span class="string">"varDict--&gt; is None"</span></div><div class="line">        <span class="keyword">elif</span> type(varDict) == dict:</div><div class="line">            <span class="keyword">for</span> (k, v) <span class="keyword">in</span> varDict.items():</div><div class="line">                <span class="keyword">print</span> <span class="string">'logDict-&gt;%s:%s !'</span> % (k, v)</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            <span class="keyword">print</span> <span class="string">"logDict--&gt; not dict type!"</span></div><div class="line">    </div><div class="line"></div><div class="line">    <span class="comment">#打印set (不重复, 无序的. 只是这个无序, 没必要标号)</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">logSet</span><span class="params">(self,varSet)</span>:</span></div><div class="line">        <span class="keyword">if</span> self.debugStatus != <span class="keyword">True</span>:</div><div class="line">            <span class="keyword">return</span></div><div class="line">        <span class="keyword">if</span> varSet <span class="keyword">is</span> <span class="keyword">None</span> <span class="keyword">or</span> <span class="keyword">not</span> varSet:</div><div class="line">            <span class="keyword">print</span> <span class="string">"varSet--&gt; is None"</span></div><div class="line">        <span class="keyword">elif</span> type(varSet) == set:</div><div class="line">            <span class="keyword">for</span> setItem <span class="keyword">in</span> varSet:</div><div class="line">                <span class="keyword">print</span> <span class="string">"varSet--&gt;"</span>,setItem</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            <span class="keyword">print</span> <span class="string">"varSet--&gt; not set type!"</span></div><div class="line">    </div><div class="line">    </div><div class="line">    <span class="comment">#写入到html文件(存长文本 )</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">save2html</span><span class="params">(self,varParam)</span>:</span></div><div class="line">        <span class="keyword">if</span> self.debugStatus != <span class="keyword">True</span>:</div><div class="line">            <span class="keyword">return</span></div><div class="line">        <span class="keyword">if</span> varParam <span class="keyword">is</span> <span class="keyword">None</span> <span class="keyword">or</span> <span class="keyword">not</span> varParam:</div><div class="line">            <span class="keyword">print</span> <span class="string">"save2html:varParam--&gt; is None"</span></div><div class="line">            <span class="keyword">return</span></div><div class="line">        </div><div class="line">        <span class="comment">#写入html</span></div><div class="line">        out_html = open(<span class="string">'out.html'</span>, <span class="string">'w'</span>)</div><div class="line">        out_html.write(<span class="string">"&lt;html&gt;"</span>)</div><div class="line">        out_html.write(<span class="string">"&lt;body&gt;"</span>)</div><div class="line">        out_html.write(<span class="string">"%s"</span> % varParam.encode(<span class="string">'utf8'</span>))</div><div class="line">        out_html.write(<span class="string">"&lt;/body&gt;"</span>)</div><div class="line">        out_html.write(<span class="string">"&lt;/html&gt;"</span>)</div><div class="line">        out_html.close()</div><div class="line">    </div><div class="line">    </div><div class="line">    <span class="comment">#在该地方使用ipdb调试. (使用"p 变量名"可以查看变量的值, n执行下一行)</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">debug_ipdb</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">if</span> self.debugStatus != <span class="keyword">True</span>:</div><div class="line">            <span class="keyword">return</span></div><div class="line">        set_trace()</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">#测试</span></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</div><div class="line">    xndebugObj = XNDebug()</div><div class="line">    </div><div class="line">    mylist = [<span class="string">'a'</span>,<span class="string">'b'</span>,<span class="string">'c'</span>]</div><div class="line">    xndebugObj.logList(mylist)</div><div class="line">    </div><div class="line">    mydict = &#123;&#125;</div><div class="line">    mydict1 = &#123;<span class="string">'a'</span>:<span class="number">123</span>,<span class="string">'b'</span>:<span class="string">'sss'</span>&#125;</div><div class="line">    xndebugObj.logDict(mydict1)</div><div class="line">    </div><div class="line">    <span class="comment">#存长文本</span></div><div class="line">    testStr= <span class="string">"write this string"</span></div><div class="line">    xndebugObj.save2html(testStr)</div><div class="line">    </div><div class="line">    xndebugObj.debug_ipdb()</div><div class="line">    </div><div class="line">    myset = set(<span class="string">'http'</span>)  <span class="comment">#初始化时为拆分成单个元素</span></div><div class="line">    abc = <span class="string">"12133333"</span>     <span class="comment">#这样是作为一个整体的</span></div><div class="line">    myset.add(abc)</div><div class="line">    xndebugObj.logSet(myset)</div></pre></td></tr></table></figure></p>
+<p>其中debug_ipdb方法中使用了ipdb调试，直接在控制台运行，十分方便。</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>以上使用的beautifulsoup4，ipdb为第三库，安装使用“pip install xxx”即可。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+<div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center">
+  <div>转载请注明出处，有疑问欢迎留言！</div>
+  <button id="rewardButton", disable="enable", onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}", style="cursor: pointer; border: 0; outline: 0; border-radius: 100%; padding: 0; margin: 0; letter-spacing: normal; text-transform: none; text-indent: 0px; text-shadow: none">
+    <span onmouseover="this.style.color='rgb(236,96,0)';this.style.background='rgb(204,204,204)'" onMouseOut="this.style.color='#fff';this.style.background='rgb(236,96,0)'" style="display: inline-block; width: 70px; height: 70px; border-radius: 100%; line-height: 81px; color: #fff; font: 400 35px/75px 'microsofty'; background: rgb(236,96,0)">赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/wechatpay.png" alt="xn4545945 WeChat Pay" style="width: 200px; max-width: 100%; display: inline-block"/>
+        <p>微信打赏</p>
+      </div>
+    
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/alipay.png" alt="xn4545945 Alipay" style="width: 200px; max-width: 100%; display: inline-block"/>
+        <p>支付宝打赏</p>
+      </div>
+    
+  </div>
+</div>
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag">#Python</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/12/php_route_url_pretty/" rel="next" title="PHP单一入口模式及URL路由美化">
+                <i class="fa fa-chevron-left"></i> PHP单一入口模式及URL路由美化
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/06/18/SHELL_Tools_sshrc_bashmarks/" rel="prev" title="SHELL中使用sshrc与bashmarks">
+                SHELL中使用sshrc与bashmarks <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/05/24/Python_spider_debug/"
+     data-title="Python爬取本博客首页与调试"
+     data-content=""
+     data-url="http://blog.xigulu.com/2016/05/24/Python_spider_debug/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/05/24/Python_spider_debug/"
+           data-title="Python爬取本博客首页与调试" data-url="http://blog.xigulu.com/2016/05/24/Python_spider_debug/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/avtar.jpg"
+               alt="xn4545945" />
+          <p class="site-author-name" itemprop="name">xn4545945</p>
+          <p class="site-description motion-element" itemprop="description">Knowledge is gained by accumulation!</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">21</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xn4545945" target="_blank">
+                  
+                    <i class="fa fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/xuneng007" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        <div class="links-of-blogroll motion-element">
+          
+            <div class="links-of-blogroll-title">Links</div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://xigulu.com/" target="_blank">私语app</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.csdn.net/xn4545945" target="_blank">我的CSDN</a>
+                </li>
+              
+            </ul>
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单爬虫"><span class="nav-number">1.</span> <span class="nav-text">简单爬虫</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#博客页面分析"><span class="nav-number">1.1.</span> <span class="nav-text">博客页面分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#爬取并显示"><span class="nav-number">1.2.</span> <span class="nav-text">爬取并显示</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#调试类"><span class="nav-number">2.</span> <span class="nav-text">调试类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结语"><span class="nav-number">3.</span> <span class="nav-text">结语</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+ 
+  <span class="author" itemprop="copyrightHolder">xn4545945</span>
+  <span class="author" itemprop="copyrightHolder">&nbsp;每周坚持更新,欢迎收藏订阅</span>
+
+  <span class="author" itemprop="copyrightHolder">
+	&nbsp;(Powered &nbsp; by <a href="http://hexo.io">Hexo</a>,&nbsp;
+	Theme &nbsp;<a href="https://github.com/iissnan/hexo-theme-next">NexT</a>)
+  </span>
+  
+</div>
+
+<div class="theme-info">
+  Knowledge is gained by accumulation!
+  <span id="busuanzi_container_site_pv">
+    &nbsp;|&nbsp; Total visited &nbsp;<span id="busuanzi_value_site_pv"></span>&nbsp; times.
+  </span>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+
+  
+
+
+
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.4.5.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.4.5.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=0.4.5.2"></script>
+<script type="text/javascript" src="/vendors/jquery-scrollintoview/jquery.scrollintoview.min.js?v=0.4.5.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=0.4.5.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.4.5.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"xn4545945"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("L3AnonOM7IYxxV8IY6kFnbB1-gzGzoHsz", "ohuc6VwpQ1SlBUgCwPRr0Qqj");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+
+</body>
+</html>

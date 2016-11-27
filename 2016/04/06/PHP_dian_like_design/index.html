@@ -1,0 +1,779 @@
+<!doctype html>
+
+
+
+
+<html class="theme-next mist">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="PHP,WEB," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="xn4545945" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="点赞功能需求：用户能点赞，能取消赞，同时能查看赞了该条状态的所有人，可能还需要提醒发该条状态的人谁谁谁赞了你。web端实现：显示点赞数，当有用户赞了该状态，则点赞数+1等。本文从点赞功能的数据库设计说起，一步步到各个功能的基本实现方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="点赞功能：从数据库设计到Web端实现分析">
+<meta property="og:url" content="http://blog.xigulu.com/2016/04/06/PHP_dian_like_design/index.html">
+<meta property="og:site_name" content="xn4545945">
+<meta property="og:description" content="点赞功能需求：用户能点赞，能取消赞，同时能查看赞了该条状态的所有人，可能还需要提醒发该条状态的人谁谁谁赞了你。web端实现：显示点赞数，当有用户赞了该状态，则点赞数+1等。本文从点赞功能的数据库设计说起，一步步到各个功能的基本实现方法。">
+<meta property="og:updated_time" content="2016-08-16T17:25:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="点赞功能：从数据库设计到Web端实现分析">
+<meta name="twitter:description" content="点赞功能需求：用户能点赞，能取消赞，同时能查看赞了该条状态的所有人，可能还需要提醒发该条状态的人谁谁谁赞了你。web端实现：显示点赞数，当有用户赞了该状态，则点赞数+1等。本文从点赞功能的数据库设计说起，一步步到各个功能的基本实现方法。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: "post",
+    fancybox: true,
+    motion: false,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> 点赞功能：从数据库设计到Web端实现分析 | xn4545945 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="http://s6.cnzz.com/stat.php?id=1258349700&web_id=1258349700" type="text/javascript"></script>
+  </div>
+
+
+
+
+
+  
+  
+
+  <div class="container one-collumn  page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">xn4545945</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-learning">
+          <a href="/learning" rel="section">
+            
+              <i class="menu-item-icon fa fa-mortar-board fa-fw"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-opensource">
+          <a href="/opensource" rel="section">
+            
+              <i class="menu-item-icon fa fa-github-alt fa-fw"></i> <br />
+            
+            开源
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                点赞功能：从数据库设计到Web端实现分析
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-04-06T00:00:00+08:00" content="2016-04-06">
+              2016-04-06
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/04/06/PHP_dian_like_design/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/04/06/PHP_dian_like_design/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/04/06/PHP_dian_like_design/" class="leancloud_visitors" data-flag-title="点赞功能：从数据库设计到Web端实现分析">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+
+
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>点赞功能需求：用户能点赞，能取消赞，同时能查看赞了该条状态的所有人，可能还需要提醒发该条状态的人谁谁谁赞了你。<br>web端实现：显示点赞数，当有用户赞了该状态，则点赞数+1等。<br>本文从点赞功能的数据库设计说起，一步步到各个功能的基本实现方法。<br><a id="more"></a></p>
+<h2 id="数据库设计"><a href="#数据库设计" class="headerlink" title="数据库设计"></a>数据库设计</h2><p>首先是2张表，t_user表与t_tatus表，分别表示用户表与状态表。Ps：这个点赞功能是需要登录的。（如果是不需要登录就能点赞，最好还需要多个字段或新表来记录用户IP，防止重复点赞）<br>那么关键是点赞功能怎么在数据库中表现出来。</p>
+<p>刚开始我觉得直接在t_tatus表中加一个like字段，当有用户点了赞，直接拼个user_id组成的字符串，用逗号隔开， 形如1,2,3,4写入即可。麻烦的是每次写入新的id都要重新拼一次字符串，取消赞也要操作一次字符串，每次取得赞的所有人也要处理字符串，每次计算赞的人数也要拆一次字符串。<br>当是这种写法也不是没好处，节省空间，不用新表，数据库开销小。无非计算字符串来来回回比较浪费时间。<br>为了以后查询好处理一点，我的实现还是新建了一张t_like表（有新方案的小伙伴可以评论留言讨论），结构如下。</p>
+<p>表t_user结构：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`t_user`</span> (</div><div class="line"><span class="string">`userID`</span>  <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</div><div class="line"><span class="string">`username`</span>  <span class="built_in">varchar</span>(<span class="number">255</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">UNIQUE</span>,</div><div class="line"><span class="string">`nickname`</span>  <span class="built_in">varchar</span>(<span class="number">255</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span> ,</div><div class="line"><span class="string">`pwd`</span>  <span class="built_in">varchar</span>(<span class="number">255</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> ,</div><div class="line"><span class="string">`phoneno`</span>  <span class="built_in">varchar</span>(<span class="number">64</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span> ,  </div><div class="line">PRIMARY <span class="keyword">KEY</span> (<span class="string">`userID`</span>)</div><div class="line">)</div></pre></td></tr></table></figure>
+<p>表t_tatus结构：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`t_tatus`</span> (</div><div class="line"><span class="string">`statusID`</span>  <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</div><div class="line"><span class="string">`userID`</span>  <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> ,</div><div class="line"><span class="string">`statusContent`</span>  <span class="built_in">varchar</span>(<span class="number">255</span>) <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="literal">NULL</span> ,</div><div class="line">PRIMARY <span class="keyword">KEY</span> (<span class="string">`statusID`</span>)</div><div class="line">)</div></pre></td></tr></table></figure></p>
+<p>表t_like结构：（双主键）<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`t_like`</span> (</div><div class="line"><span class="string">`statusID`</span>  <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> ,</div><div class="line"><span class="string">`userID`</span>  <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> ,</div><div class="line"><span class="string">`createTime`</span>  <span class="built_in">varchar</span>(<span class="number">45</span>) <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="literal">NULL</span> ,</div><div class="line">PRIMARY <span class="keyword">KEY</span> (<span class="string">`statusID`</span>,<span class="string">`userID`</span>)</div><div class="line">)</div></pre></td></tr></table></figure></p>
+<h2 id="服务器端"><a href="#服务器端" class="headerlink" title="服务器端"></a>服务器端</h2><p>服务器端主要做的就是点赞时在t_like表中插入一条数据，取消赞时找到t_like表中的对应数据删除，很easy。PS：可能还需要统计赞的个数并返回，sql语句count()一下。<br>文件名like.php<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">require_once</span>(<span class="string">'common.php'</span>);</div><div class="line"></div><div class="line"><span class="comment">//http:localhost/like.php?userID=1&amp;statusID=1&amp;getMethod=web&amp;do=auto</span></div><div class="line"></div><div class="line">$userID = $_GET[<span class="string">'userID'</span>];</div><div class="line">$statusID = $_GET[<span class="string">'statusID'</span>];</div><div class="line">$getMethod = $_GET[<span class="string">'getMethod'</span>];  <span class="comment">//请求方式, 如果是web, 则返回地址</span></div><div class="line">$do = $_GET[<span class="string">'do'</span>];  <span class="comment">//like 或者 unlike 或者 auto(自动判断)</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">if</span> (!<span class="keyword">isset</span>($userID) || !<span class="keyword">isset</span>($statusID)) &#123;</div><div class="line">    <span class="keyword">return</span> Response::show(<span class="number">401</span>, <span class="string">'参数不合法'</span>);</div><div class="line">    eixt();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">//登录检测</span></div><div class="line"><span class="comment">//xxxx</span></div><div class="line"></div><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">    $connect = Db::getInstance()-&gt;connect();</div><div class="line">&#125; <span class="keyword">catch</span> (<span class="keyword">Exception</span> $e) &#123;</div><div class="line">    <span class="keyword">return</span> Response::show(<span class="number">403</span>, <span class="string">'数据库连接失败'</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">do_like</span><span class="params">($connect,$getMethod,$statusID,$userID)</span></span>&#123;</div><div class="line">    $nowTime = date(<span class="string">'Y-m-d H:i:s'</span>, time());</div><div class="line"></div><div class="line">    $sql = <span class="string">"INSERT INTO t_like(statusID,userID,createTime) VALUES ($statusID,$userID,'$nowTime')"</span>;</div><div class="line">    $result = mysql_query($sql, $connect);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> ($result) &#123;</div><div class="line">        <span class="keyword">if</span> ($getMethod == <span class="string">"web"</span>) &#123;</div><div class="line">            <span class="keyword">echo</span> <span class="string">"Y"</span>;</div><div class="line">        &#125;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="keyword">return</span> Response::show(<span class="number">402</span>, <span class="string">'点赞失败'</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">do_unlike</span><span class="params">($connect,$getMethod,$statusID,$userID)</span></span>&#123;</div><div class="line"></div><div class="line">    $sql = <span class="string">"delete from t_like where statusID=$statusID and userID=$userID"</span>;</div><div class="line">    $result = mysql_query($sql, $connect);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> ($result) &#123;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> ($getMethod == <span class="string">"web"</span>) &#123;</div><div class="line">            <span class="keyword">echo</span> <span class="string">"N"</span>;</div><div class="line">        &#125;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="keyword">return</span> Response::show(<span class="number">403</span>, <span class="string">'取消赞失败'</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">if</span>($do == <span class="string">"auto"</span>)&#123;</div><div class="line">    <span class="comment">//1.判断是否赞过.赞过-&gt;取消赞; 未赞过, 点赞.</span></div><div class="line">    $sql = <span class="string">"SELECT createTime FROM t_like WHERE statusID=$statusID and userID=$userID"</span>;</div><div class="line"></div><div class="line">    $query = mysql_query($sql,$connect);</div><div class="line">    <span class="keyword">if</span> ($query) &#123;</div><div class="line">        <span class="keyword">if</span> ($rs = mysql_fetch_array($query)) &#123;</div><div class="line">            <span class="comment">//有值, 表示已经赞</span></div><div class="line">            do_unlike($connect,$getMethod,$statusID,$userID);</div><div class="line">        &#125;<span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">//未赞</span></div><div class="line">            do_like($connect,$getMethod,$statusID,$userID);</div><div class="line">        &#125;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="keyword">return</span> Response::show(<span class="number">401</span>, <span class="string">'查询失败'</span>);</div><div class="line">    &#125;</div><div class="line">&#125;<span class="keyword">else</span></div><div class="line"><span class="keyword">if</span> ($do == <span class="string">"like"</span>) &#123;</div><div class="line"></div><div class="line">    do_like($connect,$getMethod);</div><div class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> ($do == <span class="string">"unlike"</span>) &#123;</div><div class="line"></div><div class="line">    do_unlike($connect,$getMethod,$statusID,$userID);</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="keyword">return</span> Response::show(<span class="number">401</span>, <span class="string">'参数不合法'</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>common.php文件中包含了一些封装的返回信息，数据库连接封装。</p>
+<h2 id="web端"><a href="#web端" class="headerlink" title="web端"></a>web端</h2><h3 id="Ajax实现web端点赞"><a href="#Ajax实现web端点赞" class="headerlink" title="Ajax实现web端点赞"></a>Ajax实现web端点赞</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span> = <span class="string">"zanName"</span> <span class="attr">onclick</span>=<span class="string">"demo()"</span>&gt;</span>赞<span class="tag">&lt;/<span class="name">button</span>&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">&lt;script&gt;</div><div class="line">    ajax点击更新赞的数目</div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">demo</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="comment">//1.创建XMLHttpRequest 对象</span></div><div class="line">        <span class="keyword">var</span> xmlhttp;</div><div class="line">        <span class="keyword">if</span> (<span class="built_in">window</span>.XMLHttpRequest) &#123;<span class="comment">// code for IE7+, Firefox, Chrome, Opera, Safari</span></div><div class="line">            xmlhttp = <span class="keyword">new</span> XMLHttpRequest();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">else</span> &#123;<span class="comment">// code for IE6, IE5</span></div><div class="line">            xmlhttp = <span class="keyword">new</span> ActiveXObject(<span class="string">"Microsoft.XMLHTTP"</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">//2.发送get请求</span></div><div class="line">        xmlhttp.open(<span class="string">"GET"</span>, <span class="string">"like.php?userID=1&amp;statusID=1&amp;getMethod=web&amp;do=auto"</span>, <span class="literal">true</span>);</div><div class="line">        xmlhttp.send();</div><div class="line"></div><div class="line">        <span class="comment">//3.获取响应并显示</span></div><div class="line">        <span class="comment">//如果来自服务器的响应并非 XML，请使用 responseText 属性。</span></div><div class="line">        <span class="comment">//如果来自服务器的响应是 XML，而且需要作为 XML 对象进行解析，请使用 responseXML 属性.</span></div><div class="line">        <span class="comment">//document.getElementById("myDiv").innerHTML = xmlhttp.responseText;</span></div><div class="line">        xmlhttp.onreadystatechange = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (xmlhttp.readyState == <span class="number">4</span> &amp;&amp; xmlhttp.status == <span class="number">200</span>) &#123;</div><div class="line"></div><div class="line">                <span class="keyword">var</span> isLike = xmlhttp.responseText;</div><div class="line"></div><div class="line">                <span class="keyword">if</span>(isLike == <span class="string">'Y'</span>)&#123;</div><div class="line">                    <span class="built_in">document</span>.getElementById(<span class="string">"zanName"</span>).innerHTML = <span class="string">"已赞"</span>;</div><div class="line">                &#125;<span class="keyword">else</span> <span class="keyword">if</span>(isLike == <span class="string">'N'</span>)&#123;</div><div class="line">                    <span class="built_in">document</span>.getElementById(<span class="string">"zanName"</span>).innerHTML = <span class="string">"赞"</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&lt;<span class="regexp">/script&gt;</span></div></pre></td></tr></table></figure>
+<p>通过获取服务器返回的Y，或者N来自动判断是否点过赞。点过赞则显示已赞，再次点击则取消赞。</p>
+<h3 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h3><p>可以用客户端Cookie记录用户是否点赞，也可以用Session判断用户是否登录，并记录用户是否点赞。然后再对数据库进行操作。</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><h3 id="潜在问题"><a href="#潜在问题" class="headerlink" title="潜在问题"></a>潜在问题</h3><p>因为实际需求中点赞数量可能很庞大，多用户+多status时更是惊人。使得这张t_like表可能变得巨大，且没必要，那么如何解决？</p>
+<h3 id="我的优化思路"><a href="#我的优化思路" class="headerlink" title="我的优化思路"></a>我的优化思路</h3><p>定期清理t_like表中的数据，如用户删除了status的；时间过去久远的status可以只记录点赞的总条数，把对应的t_like中数据删除。</p>
+<p>功能不尽完善，实际需求时很多细节功能要复杂很多，本文仅提供一些思路，不贴完整代码。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+<div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center">
+  <div>转载请注明出处，有疑问欢迎留言！</div>
+  <button id="rewardButton", disable="enable", onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}", style="cursor: pointer; border: 0; outline: 0; border-radius: 100%; padding: 0; margin: 0; letter-spacing: normal; text-transform: none; text-indent: 0px; text-shadow: none">
+    <span onmouseover="this.style.color='rgb(236,96,0)';this.style.background='rgb(204,204,204)'" onMouseOut="this.style.color='#fff';this.style.background='rgb(236,96,0)'" style="display: inline-block; width: 70px; height: 70px; border-radius: 100%; line-height: 81px; color: #fff; font: 400 35px/75px 'microsofty'; background: rgb(236,96,0)">赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/wechatpay.png" alt="xn4545945 WeChat Pay" style="width: 200px; max-width: 100%; display: inline-block"/>
+        <p>微信打赏</p>
+      </div>
+    
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/alipay.png" alt="xn4545945 Alipay" style="width: 200px; max-width: 100%; display: inline-block"/>
+        <p>支付宝打赏</p>
+      </div>
+    
+  </div>
+</div>
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PHP/" rel="tag">#PHP</a>
+          
+            <a href="/tags/WEB/" rel="tag">#WEB</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/02/iOS-XNCategory/" rel="next" title="iOS实用分类：XNCategory">
+                <i class="fa fa-chevron-left"></i> iOS实用分类：XNCategory
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/04/09/JQuery_JS_JSON_JSONP_data/" rel="prev" title="JSONP处理跨域请求及WEB中JSON处理">
+                JSONP处理跨域请求及WEB中JSON处理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/04/06/PHP_dian_like_design/"
+     data-title="点赞功能：从数据库设计到Web端实现分析"
+     data-content=""
+     data-url="http://blog.xigulu.com/2016/04/06/PHP_dian_like_design/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/04/06/PHP_dian_like_design/"
+           data-title="点赞功能：从数据库设计到Web端实现分析" data-url="http://blog.xigulu.com/2016/04/06/PHP_dian_like_design/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/avtar.jpg"
+               alt="xn4545945" />
+          <p class="site-author-name" itemprop="name">xn4545945</p>
+          <p class="site-description motion-element" itemprop="description">Knowledge is gained by accumulation!</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">21</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xn4545945" target="_blank">
+                  
+                    <i class="fa fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/xuneng007" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        <div class="links-of-blogroll motion-element">
+          
+            <div class="links-of-blogroll-title">Links</div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://xigulu.com/" target="_blank">私语app</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.csdn.net/xn4545945" target="_blank">我的CSDN</a>
+                </li>
+              
+            </ul>
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库设计"><span class="nav-number">1.</span> <span class="nav-text">数据库设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器端"><span class="nav-number">2.</span> <span class="nav-text">服务器端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web端"><span class="nav-number">3.</span> <span class="nav-text">web端</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Ajax实现web端点赞"><span class="nav-number">3.1.</span> <span class="nav-text">Ajax实现web端点赞</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#扩展"><span class="nav-number">3.2.</span> <span class="nav-text">扩展</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结语"><span class="nav-number">4.</span> <span class="nav-text">结语</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#潜在问题"><span class="nav-number">4.1.</span> <span class="nav-text">潜在问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#我的优化思路"><span class="nav-number">4.2.</span> <span class="nav-text">我的优化思路</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+ 
+  <span class="author" itemprop="copyrightHolder">xn4545945</span>
+  <span class="author" itemprop="copyrightHolder">&nbsp;每周坚持更新,欢迎收藏订阅</span>
+
+  <span class="author" itemprop="copyrightHolder">
+	&nbsp;(Powered &nbsp; by <a href="http://hexo.io">Hexo</a>,&nbsp;
+	Theme &nbsp;<a href="https://github.com/iissnan/hexo-theme-next">NexT</a>)
+  </span>
+  
+</div>
+
+<div class="theme-info">
+  Knowledge is gained by accumulation!
+  <span id="busuanzi_container_site_pv">
+    &nbsp;|&nbsp; Total visited &nbsp;<span id="busuanzi_value_site_pv"></span>&nbsp; times.
+  </span>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+
+  
+
+
+
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.4.5.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.4.5.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=0.4.5.2"></script>
+<script type="text/javascript" src="/vendors/jquery-scrollintoview/jquery.scrollintoview.min.js?v=0.4.5.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=0.4.5.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.4.5.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"xn4545945"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("L3AnonOM7IYxxV8IY6kFnbB1-gzGzoHsz", "ohuc6VwpQ1SlBUgCwPRr0Qqj");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+
+</body>
+</html>

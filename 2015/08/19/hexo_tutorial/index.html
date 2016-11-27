@@ -1,0 +1,822 @@
+<!doctype html>
+
+
+
+
+<html class="theme-next mist">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="xn4545945" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="Hexo是一个静态博客系统，可以很方便用markdown写博客, 然后deploy到github pages。在修改，发布，定制主题与插件中遇到了一些或大或小的错误，有同样遇到问题的同学可以做一下参考。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo搭建博客小记">
+<meta property="og:url" content="http://blog.xigulu.com/2015/08/19/hexo_tutorial/index.html">
+<meta property="og:site_name" content="xn4545945">
+<meta property="og:description" content="Hexo是一个静态博客系统，可以很方便用markdown写博客, 然后deploy到github pages。在修改，发布，定制主题与插件中遇到了一些或大或小的错误，有同样遇到问题的同学可以做一下参考。">
+<meta property="og:image" content="http://ww2.sinaimg.cn/large/4b274f16jw1ew7333f458j20a60570t0.jpg">
+<meta property="og:updated_time" content="2016-08-16T17:25:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hexo搭建博客小记">
+<meta name="twitter:description" content="Hexo是一个静态博客系统，可以很方便用markdown写博客, 然后deploy到github pages。在修改，发布，定制主题与插件中遇到了一些或大或小的错误，有同样遇到问题的同学可以做一下参考。">
+<meta name="twitter:image" content="http://ww2.sinaimg.cn/large/4b274f16jw1ew7333f458j20a60570t0.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: "post",
+    fancybox: true,
+    motion: false,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> Hexo搭建博客小记 | xn4545945 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="http://s6.cnzz.com/stat.php?id=1258349700&web_id=1258349700" type="text/javascript"></script>
+  </div>
+
+
+
+
+
+  
+  
+
+  <div class="container one-collumn  page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">xn4545945</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-learning">
+          <a href="/learning" rel="section">
+            
+              <i class="menu-item-icon fa fa-mortar-board fa-fw"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-opensource">
+          <a href="/opensource" rel="section">
+            
+              <i class="menu-item-icon fa fa-github-alt fa-fw"></i> <br />
+            
+            开源
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Hexo搭建博客小记
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-08-19T00:00:00+08:00" content="2015-08-19">
+              2015-08-19
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/08/19/hexo_tutorial/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/08/19/hexo_tutorial/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2015/08/19/hexo_tutorial/" class="leancloud_visitors" data-flag-title="Hexo搭建博客小记">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+
+
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>是一个静态博客系统，可以很方便用markdown写博客, 然后deploy到github pages。在修改，发布，定制主题与插件中遇到了一些或大或小的错误，有同样遇到问题的同学可以做一下参考。<br><a id="more"></a></p>
+<hr>
+<h2 id="安装环境"><a href="#安装环境" class="headerlink" title="安装环境"></a>安装环境</h2><p>懒得敲命令的话, 直接到<a href="https://nodejs.org/en/" target="_blank" rel="external">node.js</a>官网下载安装包安装. 然后<a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>官网上安装命令在照着做一遍.</p>
+<p>检测node.js版本</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ node -v</div></pre></td></tr></table></figure>
+<p>安装hexo</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm install hexo-cli -g</div></pre></td></tr></table></figure>
+<hr>
+<h2 id="配置github"><a href="#配置github" class="headerlink" title="配置github"></a>配置github</h2><p>_config.yml文件中更改下面的. (github的SSH方式地址, 换成自己的)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line"><span class="built_in">type</span>: git</div><div class="line">repo: git@github.com:xxxxx/xxxxxx.github.io.git</div></pre></td></tr></table></figure>
+<p>配置好之后需要先生成generate, 然后可以启动本地服务器看看. 也可以直接发布deploy到github.</p>
+<p>生成静态页面</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
+<p>发布到github</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
+<p>启动本地服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
+<h3 id="deploy时报错ERROR-Deployer-not-found-git"><a href="#deploy时报错ERROR-Deployer-not-found-git" class="headerlink" title="deploy时报错ERROR Deployer not found: git"></a>deploy时报错ERROR Deployer not found: git</h3><p>解决办法</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm install hexo-cli -g</div></pre></td></tr></table></figure>
+<h3 id="deploy时报错Error-Permission-denied-publickey"><a href="#deploy时报错Error-Permission-denied-publickey" class="headerlink" title="deploy时报错Error: Permission denied (publickey)."></a>deploy时报错Error: Permission denied (publickey).</h3><p>这种情况就是要在github添加publickey, 允许SSH方式上传代码.步骤如下.<a href="https://help.github.com/articles/generating-ssh-keys/" target="_blank" rel="external">官方链接地址</a> 解决办法</p>
+<p>1)生成key(xxxx换成你自己github用户名)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ ssh-keygen -t rsa -C “xxxxxxxxx”</div></pre></td></tr></table></figure>
+<p>2)打印key.(第一步生成时会在控制台打印出地址)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cat /Users/xuneng/.ssh/id_rsa.pub</div></pre></td></tr></table></figure>
+<p>3)进入到该github项目的设置, 把打印出的key的所有字符串拷贝到Deploy keys中保存即可.(勾选允许可写操作)<br><img src="http://ww2.sinaimg.cn/large/4b274f16jw1ew7333f458j20a60570t0.jpg" alt="在github对应项目中添加key"> </p>
+<p> 4)测试github SSH连通性</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ ssh -T git@github.com</div></pre></td></tr></table></figure>
+<p>ok</p>
+<h3 id="deploy时报错：error-deployer-not-found-git"><a href="#deploy时报错：error-deployer-not-found-git" class="headerlink" title="deploy时报错：error deployer not found:git"></a>deploy时报错：error deployer not found:git</h3><p>问题出现的原因是你更换了theme，导致git提交的内容与服务器上完全不匹配。<br>解决办法：（在博客目录中执行）<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm install hexo-deployer-git --save</div></pre></td></tr></table></figure></p>
+<p>然后再提交就ok了.</p>
+<hr>
+<h2 id="添加评论框"><a href="#添加评论框" class="headerlink" title="添加评论框"></a>添加评论框</h2><p>很多人用<a href="http://duoshuo.com/" target="_blank" rel="external">多说</a>, 因为对国内的账号支持比较好(关于hexo配置多说, 可参考<a href="http://dev.duoshuo.com/threads/541d3b2b40b5abcd2e4df0e9" target="_blank" rel="external">这里</a>). </p>
+<blockquote>
+<p>我个人用的<a href="https://github.com/xiangming/landscape-plus" target="_blank" rel="external">landscape-plus</a>主题, 默认配置了多说与分享. 只需要在<code>themes/landscape-plus/_config.yml</code>中找到<code>duoshuo_shortname: xxxxx</code> (最后的xxxxx替换成自己申请的多说账号用户名即可)</p>
+</blockquote>
+<hr>
+<h2 id="修改侧边栏顺序"><a href="#修改侧边栏顺序" class="headerlink" title="修改侧边栏顺序"></a>修改侧边栏顺序</h2><p>右边侧边栏排列顺序看着很不顺眼, 想把最近文章放到最上面怎么办?</p>
+<ol>
+<li>依旧是在<code>themes/landscape-plus/_config.yml</code>下.</li>
+<li>找到</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">widgets:</div><div class="line">- recent_posts</div><div class="line">- tag</div><div class="line">- category</div><div class="line">- tagcloud</div><div class="line">- archive</div><div class="line">- links</div></pre></td></tr></table></figure>
+<p>其中<code>recent_posts</code>代表的就是最近文章分类, 其他的顾名思义. (主题中会遍历这几个设置项, 依次显示)</p>
+<p>ok.</p>
+<hr>
+<h2 id="添加”关于我”页面"><a href="#添加”关于我”页面" class="headerlink" title="添加”关于我”页面"></a>添加”关于我”页面</h2><p>执行命令<code>hexo new page &quot;about&quot;</code>, 会生成<code>source/about/index.md</code>文件</p>
+<ol>
+<li>依旧是在<code>themes/landscape-plus/_config.yml</code></li>
+<li>找到</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">menu:</div><div class="line">  首页: /</div><div class="line">  归档: /archives</div><div class="line">  关于我: /about</div><div class="line">rss: /atom.xml</div></pre></td></tr></table></figure>
+<p>在归档下面复制一行, 改为”关于我”, 路径依照命令写/about即可!</p>
+<hr>
+<h2 id="懒人必备-一键写文章发布脚本"><a href="#懒人必备-一键写文章发布脚本" class="headerlink" title="懒人必备, 一键写文章发布脚本"></a>懒人必备, 一键写文章发布脚本</h2><p>写个文章一堆命令记不住呀, 很烦, 怎么办?<br>于是花了点时间写了2个shell脚本.</p>
+<h3 id="一键生成模版文章-并用喜爱的编辑器打开"><a href="#一键生成模版文章-并用喜爱的编辑器打开" class="headerlink" title="一键生成模版文章, 并用喜爱的编辑器打开"></a>一键生成模版文章, 并用喜爱的编辑器打开</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#!/bin/bash</span></div><div class="line"></div><div class="line"><span class="built_in">cd</span> /Users/xuneng/Sites/hexo/xn545945/<span class="built_in">source</span></div><div class="line"><span class="built_in">echo</span> <span class="string">"跳转路径为"</span></div><div class="line"><span class="built_in">pwd</span></div><div class="line"></div><div class="line"><span class="built_in">echo</span> -n <span class="string">"请输入文件名:"</span></div><div class="line"><span class="built_in">read</span> filename</div><div class="line">cp myTemple.md _posts/<span class="variable">$filename</span>.md</div><div class="line"><span class="built_in">echo</span> <span class="string">"文件 <span class="variable">$filename</span>.md 已经创建"</span></div><div class="line"></div><div class="line">open /Users/xuneng/Desktop/MacDown.app _posts/<span class="variable">$filename</span>.md</div></pre></td></tr></table></figure>
+<blockquote>
+<p>说明: 事先我创建了一个 <code>/source/myTemple.md</code>模版, 里面自己随意存储一些信息, 如文章标题分类等. 然后将其复制到_posts/目录下. 最后用MacDown编辑器打开(我的编辑器是放到桌面上的)<br>中途需要输入文件名, 确保不要和以前的重复.</p>
+</blockquote>
+<h3 id="一键发布到Github"><a href="#一键发布到Github" class="headerlink" title="一键发布到Github"></a>一键发布到Github</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#!/bin/bash</span></div><div class="line"></div><div class="line"><span class="built_in">cd</span> /Users/xuneng/Sites/hexo/xn545945</div><div class="line"><span class="built_in">echo</span> <span class="string">"跳转路径为"</span></div><div class="line"><span class="built_in">pwd</span></div><div class="line"><span class="built_in">echo</span> <span class="string">"开始生成并发布到github"</span></div><div class="line">hexo deploy -g</div></pre></td></tr></table></figure>
+<blockquote>
+<p>如果想在本地预览, 将上面最后一句替换成<code>hexo server -g</code>即可.</p>
+</blockquote>
+<p>将脚本保存成xxx.sh文件, 每次<code>./xxx.sh</code>执行一下即可.</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+<div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center">
+  <div>转载请注明出处，有疑问欢迎留言！</div>
+  <button id="rewardButton", disable="enable", onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}", style="cursor: pointer; border: 0; outline: 0; border-radius: 100%; padding: 0; margin: 0; letter-spacing: normal; text-transform: none; text-indent: 0px; text-shadow: none">
+    <span onmouseover="this.style.color='rgb(236,96,0)';this.style.background='rgb(204,204,204)'" onMouseOut="this.style.color='#fff';this.style.background='rgb(236,96,0)'" style="display: inline-block; width: 70px; height: 70px; border-radius: 100%; line-height: 81px; color: #fff; font: 400 35px/75px 'microsofty'; background: rgb(236,96,0)">赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/wechatpay.png" alt="xn4545945 WeChat Pay" style="width: 200px; max-width: 100%; display: inline-block"/>
+        <p>微信打赏</p>
+      </div>
+    
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/alipay.png" alt="xn4545945 Alipay" style="width: 200px; max-width: 100%; display: inline-block"/>
+        <p>支付宝打赏</p>
+      </div>
+    
+  </div>
+</div>
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Hexo/" rel="tag">#Hexo</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/08/29/iOSPractice_tableView_move/" rel="prev" title="iOS中输入文字时自动上/下移TableView完美方法">
+                iOS中输入文字时自动上/下移TableView完美方法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2015/08/19/hexo_tutorial/"
+     data-title="Hexo搭建博客小记"
+     data-content=""
+     data-url="http://blog.xigulu.com/2015/08/19/hexo_tutorial/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2015/08/19/hexo_tutorial/"
+           data-title="Hexo搭建博客小记" data-url="http://blog.xigulu.com/2015/08/19/hexo_tutorial/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/avtar.jpg"
+               alt="xn4545945" />
+          <p class="site-author-name" itemprop="name">xn4545945</p>
+          <p class="site-description motion-element" itemprop="description">Knowledge is gained by accumulation!</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">21</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xn4545945" target="_blank">
+                  
+                    <i class="fa fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/xuneng007" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        <div class="links-of-blogroll motion-element">
+          
+            <div class="links-of-blogroll-title">Links</div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://xigulu.com/" target="_blank">私语app</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.csdn.net/xn4545945" target="_blank">我的CSDN</a>
+                </li>
+              
+            </ul>
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装环境"><span class="nav-number">1.</span> <span class="nav-text">安装环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置github"><span class="nav-number">2.</span> <span class="nav-text">配置github</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#deploy时报错ERROR-Deployer-not-found-git"><span class="nav-number">2.1.</span> <span class="nav-text">deploy时报错ERROR Deployer not found: git</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#deploy时报错Error-Permission-denied-publickey"><span class="nav-number">2.2.</span> <span class="nav-text">deploy时报错Error: Permission denied (publickey).</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#deploy时报错：error-deployer-not-found-git"><span class="nav-number">2.3.</span> <span class="nav-text">deploy时报错：error deployer not found:git</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加评论框"><span class="nav-number">3.</span> <span class="nav-text">添加评论框</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改侧边栏顺序"><span class="nav-number">4.</span> <span class="nav-text">修改侧边栏顺序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加”关于我”页面"><span class="nav-number">5.</span> <span class="nav-text">添加”关于我”页面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#懒人必备-一键写文章发布脚本"><span class="nav-number">6.</span> <span class="nav-text">懒人必备, 一键写文章发布脚本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一键生成模版文章-并用喜爱的编辑器打开"><span class="nav-number">6.1.</span> <span class="nav-text">一键生成模版文章, 并用喜爱的编辑器打开</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一键发布到Github"><span class="nav-number">6.2.</span> <span class="nav-text">一键发布到Github</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+ 
+  <span class="author" itemprop="copyrightHolder">xn4545945</span>
+  <span class="author" itemprop="copyrightHolder">&nbsp;每周坚持更新,欢迎收藏订阅</span>
+
+  <span class="author" itemprop="copyrightHolder">
+	&nbsp;(Powered &nbsp; by <a href="http://hexo.io">Hexo</a>,&nbsp;
+	Theme &nbsp;<a href="https://github.com/iissnan/hexo-theme-next">NexT</a>)
+  </span>
+  
+</div>
+
+<div class="theme-info">
+  Knowledge is gained by accumulation!
+  <span id="busuanzi_container_site_pv">
+    &nbsp;|&nbsp; Total visited &nbsp;<span id="busuanzi_value_site_pv"></span>&nbsp; times.
+  </span>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+
+  
+
+
+
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.4.5.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.4.5.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=0.4.5.2"></script>
+<script type="text/javascript" src="/vendors/jquery-scrollintoview/jquery.scrollintoview.min.js?v=0.4.5.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=0.4.5.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.4.5.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"xn4545945"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("L3AnonOM7IYxxV8IY6kFnbB1-gzGzoHsz", "ohuc6VwpQ1SlBUgCwPRr0Qqj");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+
+</body>
+</html>
