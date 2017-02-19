@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://blog.xigulu.com/"/>
-  <updated>2016-11-27T09:57:44.000Z</updated>
+  <updated>2017-02-19T20:04:25.000Z</updated>
   <id>http://blog.xigulu.com/</id>
   
   <author>
@@ -14,6 +14,87 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>【iOS】LLDB调试技巧</title>
+    <link href="http://blog.xigulu.com/2017/01/20/iOS_LLDB/"/>
+    <id>http://blog.xigulu.com/2017/01/20/iOS_LLDB/</id>
+    <published>2017-01-19T16:00:00.000Z</published>
+    <updated>2017-02-19T20:04:25.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>LLDB调试器很早就取代GDB，成为Xcode工程中默认的调试器。</p>
+<p><a href="http://lldb.llvm.org/tutorial.html" target="_blank" rel="external">http://lldb.llvm.org/tutorial.html</a>   </p>
+<p><strong>命令运行方法</strong>:  必须先打断点—&gt;然后才能在控制台中输入调试语句. 或者运行后点击暂停.</p>
+<p><strong>命令补全</strong>: 补全会在第三个字符被键入时自动弹出，或者通过Esc键手动弹出。</p>
+<p><strong>关于<code>~/.lldbinit</code>文件</strong>:  LLDB在启动时会读取<code>~/.lldbinit</code>文件. 这个文件里存放LLDB启动时执行的脚本/alias等.</p>
+<a id="more"></a>
+<hr>
+<h2 id="调试命令"><a href="#调试命令" class="headerlink" title="调试命令"></a>调试命令</h2><p>$0  $1 之类的是当前运行的调试记录, 可直接使用值. (任何以美元符开头的东西都是存在于 LLDB 的命名空间的)</p>
+<p>LLDB 命令实际上会作前缀匹配. 所以如<code>print</code>命令,  你也可以使用 <code>prin</code>，<code>pri</code>，或者 <code>p</code>。但你不能使用 <code>pr</code>，因为 LLDB 不能消除和 <code>process</code> 的歧义. (很多命令的是简写或者别名)</p>
+<p><strong>help</strong>      查看命令帮助. (不传参数时显示所有命令, 可以具体查看莫伊参数的使用)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">help po</div><div class="line">help break command add         具体到查看add参数的帮助</div></pre></td></tr></table></figure>
+<p><strong>p</strong>（print)      功能是输出原生类型（boolean、integer、float、etc）的信息。<a href="https://sourceware.org/gdb/onlinedocs/gdb/Output-Formats.html" target="_blank" rel="external">格式清单</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">p (int)[[[self view] subviews] count]</div><div class="line">p/x 16              print/&lt;fmt&gt;格式  这里表示将变量或值以16进制输出</div><div class="line">p/t 16              二进制输出(t表示two)</div><div class="line">p/c 16              打印字符串</div><div class="line">x/4c $str           x命名为查看内存. 这里查看4个字节</div></pre></td></tr></table></figure>
+<p><strong>po</strong>（print object）功能是输出objective-c中对象（objects）的信息.  (为e -o —的别名)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">po [self view]           输出当前view信息</div><div class="line">po [[[UIApplication sharedApplication] keyWindow] recursiveDescription]     打印当前的视图层级</div></pre></td></tr></table></figure>
+<p><strong>call</strong>        同po或p一样, 也是调用. 当不需要显示输出时使用.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">call [self.view setBackgroundColor:[UIColor redColor]]</div></pre></td></tr></table></figure>
+<p><strong>expr</strong>(全称expression, 也简写为e)   运行时修改变量值, 指针等. </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">e NSString *$str = @&quot;blog.xigulu.com&quot;           定义一个变量str</div><div class="line">e @import UIKit</div><div class="line">e cellItem.layer.borderWidth = 1</div><div class="line">e (void)[CATransaction flush]                   刷新界面(在刷新界面时调用, 因为程序已经暂停)</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">e id $view = (id) 0x7fbd71432590</div><div class="line">e (void) [$view setBackgroundColor:[UIColor redColor]]         改变view的背景颜色</div><div class="line">e (void)[CATransaction flush]</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">e id $nvc = [[[UIApplication sharedApplication] keyWindow] rootViewController]   //拿到根NavigationController</div><div class="line">e id $vc = [UIViewController new]                                //生成一个vc</div><div class="line">e (void)[[$vc view] setBackgroundColor:[UIColor yellowColor]]</div><div class="line">e (void)[$vc setTitle:@&quot;Yay!&quot;]</div><div class="line">e (void)[$nvc pushViewContoller:$vc animated:YES]                //push</div><div class="line">caflush // e (void)[CATransaction flush]                         //显示</div></pre></td></tr></table></figure>
+<p><strong>bt</strong> (全称thread backtrace)     打印调用堆栈，加all可打印所有thread的堆栈。程序出错时可使用这个命令.</p>
+<p>可以把断点放在函数的开头，然后用 <code>thread return</code> 命令重写函数的行为，然后继续。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">thread backtrace all             查看所有线程调用栈</div><div class="line">thread list                      列出所有线程</div><div class="line">thread return &lt;exp&gt;              可用来控制程序流程, 伪造返回值</div></pre></td></tr></table></figure>
+<p><strong>frame variable</strong>   获取全部变量值。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">frame v self-&gt;testVar            也可以获取单个变量值</div><div class="line">frame info                       当前的行数和源码文件，以及其他一些信息</div></pre></td></tr></table></figure>
+<p><strong>image</strong>      可用于寻址，有多个组合命令。常用于寻找栈地址对应的代码位置, 用于查错(能定位出错误代码行数)。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">image lookup --address 0x0000000100004af8                最后为栈地址</div></pre></td></tr></table></figure>
+<p><strong>breakpoint</strong>(或简写为b)       设置断点. (可在运行过程中添加)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">breakpoint set -f XXX.m -l 28              第28行设置断点</div><div class="line">b ViewController.swift:28                  第28行设置断点(xxx.m也一样)</div><div class="line">b 28                                       功能同上</div><div class="line">b myfunc                                   直接指定函数(符号断点:Xcode GUI中只要方法执行就触发断点, 这里只针对本类)</div><div class="line">b -[NSArray objectAtIndex:]                </div><div class="line">breakpoint list                         // 列出所有断点. 简写br li</div><div class="line">br dis 1                                   禁用某个断点</div><div class="line">breakpoint delete 3                     // 删除3号断点</div></pre></td></tr></table></figure>
+<p><strong>断点调试命令</strong>: <code>c</code> 即process continue，<code>n</code> 即step over下一步,  <code>s</code>即step in, <code>thread step-out</code>即step out. (n,s比较常用)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">n            下一步</div><div class="line">s            进入</div></pre></td></tr></table></figure>
+<p><strong>watchpoint</strong>:  监听某个实例的变化. (等同于在Xcode调试变量窗口—&gt;右键某个变量—&gt;Watch xx)</p>
+<p><strong>注意</strong>: watchpoint是分类型的，包括read，write或者read_write类型. 通过Xcode右键添加的只能是write类型.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">watchpoint set self-&gt;testVar                     //为该变量地址设置watchpoint</div><div class="line">watchpoint set v -w read_write _mybtn            //为_mybtn变量设置read_write类型的监听</div><div class="line">watchpoint set expression 0x00007fb27b4969e0     //为该内存地址设置watchpoint，内存地址可从前文提及的`p`命令获取</div><div class="line">watchpoint command add -o &apos;frame info&apos; 1         //为watchpoint 1号加上子命令 `frame info`</div><div class="line">watchpoint list                   //列出所有watchpoint</div><div class="line">watchpoint delete                 // 删除所有watchpoint</div></pre></td></tr></table></figure>
+<p><strong>定义别名alias</strong>:  ( 我们可以自由地创建LLDB命令的别名集合。LLDB在启动时会读取~/.lldbinit文件。这个文件中存储了command alias命令创建的别名。)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">command alias mycommand image lookup --address %1                    定义mycommand别名</div></pre></td></tr></table></figure>
+<p>上面的就可以简化为<code>mycommand  0x0000000100004af8</code>进行调用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">breakpoint set --file foo.c --line 12</div><div class="line">command alias bfl breakpoint set -f %1 -l %2           用别名</div><div class="line">bfl foo.c 12           简化后的调用方式</div><div class="line">command unalias bfl    取消别名</div></pre></td></tr></table></figure>
+<p><strong>lldb中声明变量</strong>: 和PHP中变量一样</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">e int $a = 2            //普通类型</div><div class="line">p $a * 19</div><div class="line">e NSArray *$array = @[ @&quot;Saturday&quot;, @&quot;Sunday&quot;, @&quot;Monday&quot; ]      //对象类型</div><div class="line">p [$array count]</div></pre></td></tr></table></figure>
+<h2 id="在终端中调试程序"><a href="#在终端中调试程序" class="headerlink" title="在终端中调试程序"></a>在终端中调试程序</h2><p> <a href="http://casatwy.com/shi-yong-lldbdiao-shi-cheng-xu.html" target="_blank" rel="external">使用LLDB调试程序</a></p>
+<p>一般是在Xcode中进行调试, 也可以在命令行中调试. 步骤如下:  <a href="http://www.cocoachina.com/ios/20150126/11021.html" target="_blank" rel="external">参考</a>   (这个就类似于Windows中的debug程序)</p>
+<p><strong>1.</strong>加载程序以备调试</p>
+<p><strong>2.</strong>将一个运行的程序绑定到LLDB</p>
+<p><strong>3.</strong>设置断点和观察点</p>
+<p><strong>4.</strong>控制程序的执行</p>
+<p><strong>5.</strong>在调试的程序中导航</p>
+<p><strong>6.</strong>检查状态和值的变量</p>
+<p><strong>7.</strong>执行替代代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ lldb /Users/xuneng/Desktop/MacApp/MacDown.app          启动调试. (或者直接`lldb`进入REPL交互界面)</div><div class="line">设置断点....    (这个只有app程序不好设置)</div><div class="line">$ run             启动程序</div><div class="line">$ q               退出lldb</div></pre></td></tr></table></figure>
+<h2 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h2><p><strong>问题1</strong>: has unknown return type (不明类型或者类型不匹配)  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">p NSLog(@&quot;%@&quot;,[self.view  viewWithTag:1001])            (最新版本的这个已经修复了)</div><div class="line">p (void)NSLog(@&quot;%@&quot;,[self.view  viewWithTag:1001])      多见于id类型, 必须显式声明类型。</div></pre></td></tr></table></figure>
+<p><strong>问题2</strong>: no known method ‘-characterAtIndex:’;  cast the message send to the method’s return type</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">p [[$array objectAtIndex:$a] characterAtIndex:0]         也是返回值的问题</div><div class="line">p (char)[[$array objectAtIndex:$a] characterAtIndex:0]   加上(char)转换即可</div></pre></td></tr></table></figure>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://objccn.io/issue-19-2/" target="_blank" rel="external">与调试器共舞 - LLDB 的华尔兹</a></p>
+<p><a href="https://developer.apple.com/library/content/documentation/IDEs/Conceptual/gdb_to_lldb_transition_guide/document/Introduction.html" target="_blank" rel="external">Apple LLDB Quick Start Guide</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;LLDB调试器很早就取代GDB，成为Xcode工程中默认的调试器。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;http://lldb.llvm.org/tutorial.html&quot;&gt;http://lldb.llvm.org/tutorial.html&lt;/a&gt;   &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;命令运行方法&lt;/strong&gt;:  必须先打断点—&amp;gt;然后才能在控制台中输入调试语句. 或者运行后点击暂停.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;命令补全&lt;/strong&gt;: 补全会在第三个字符被键入时自动弹出，或者通过Esc键手动弹出。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;关于&lt;code&gt;~/.lldbinit&lt;/code&gt;文件&lt;/strong&gt;:  LLDB在启动时会读取&lt;code&gt;~/.lldbinit&lt;/code&gt;文件. 这个文件里存放LLDB启动时执行的脚本/alias等.&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="iOS" scheme="http://blog.xigulu.com/tags/iOS/"/>
+    
+  </entry>
   
   <entry>
     <title>【微信】小程序开发尝鲜</title>
@@ -866,44 +947,6 @@
     
     
       <category term="ReactiveCocoa" scheme="http://blog.xigulu.com/tags/ReactiveCocoa/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>iOS中输入文字时自动上/下移TableView完美方法</title>
-    <link href="http://blog.xigulu.com/2015/08/29/iOSPractice_tableView_move/"/>
-    <id>http://blog.xigulu.com/2015/08/29/iOSPractice_tableView_move/</id>
-    <published>2015-08-28T16:00:00.000Z</published>
-    <updated>2016-08-16T17:25:46.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>当我们需要处理键盘事件, 如登录或者输入信息的页面, 会让tableView向上移动, 以至于不让键盘挡住输入框。 这样做能提升用户体验。 同理ScrolView, TextField/TextView等, 本文主要记录几种解决办法。</p>
-<a id="more"></a>
-<hr>
-<h2 id="方法一-监听TextField-TextView的代理事件"><a href="#方法一-监听TextField-TextView的代理事件" class="headerlink" title="方法一: 监听TextField/TextView的代理事件"></a>方法一: 监听TextField/TextView的代理事件</h2><p>主要代码如下</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#pragma mark - textField delegate</span></div><div class="line">- (<span class="keyword">void</span>)textFieldDidBeginEditing:(<span class="built_in">UITextField</span> *)textField &#123;</div><div class="line">    [<span class="keyword">self</span> animateTextField:textField up:<span class="literal">YES</span>];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (<span class="keyword">void</span>)textFieldDidEndEditing:(<span class="built_in">UITextField</span> *)textField &#123;</div><div class="line">    [<span class="keyword">self</span> animateTextField:textField up:<span class="literal">NO</span>];</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">//移位</span></div><div class="line">- (<span class="keyword">void</span>) animateTextField:(<span class="built_in">UITextField</span>*)textField up: (<span class="built_in">BOOL</span>) up&#123;</div><div class="line">    <span class="comment">//假设y 抽上移100.</span></div><div class="line">    <span class="keyword">const</span> <span class="keyword">int</span> movementDistance = <span class="number">100</span>;</div><div class="line">    <span class="keyword">const</span> <span class="keyword">float</span> movementDuration = <span class="number">0.3</span>f;</div><div class="line">    </div><div class="line">    <span class="keyword">int</span> movement = (up ? -movementDistance : movementDistance);</div><div class="line">    </div><div class="line">    [<span class="built_in">UIView</span> animateWithDuration:movementDuration animations:^&#123;</div><div class="line">        <span class="keyword">self</span>.tableViewMain.frame = <span class="built_in">CGRectOffset</span>(<span class="keyword">self</span>.view.frame, <span class="number">0</span>, movement);</div><div class="line">    &#125;];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>方法一采用整体上移/回移tableView的frame方法.</p>
-<ul>
-<li><strong>优点</strong>: 对于非采用tableView(ScrollView)布局的页面, 优势非常明显, 简单方便. 如: 登录时, 只需要挪动一固定位置, 达到输入框置顶的效果.</li>
-<li><strong>缺点</strong>: 很明显, 没有自动获取键盘高度, 无法达到移动键盘高度的大小(键盘高度非固定). </li>
-</ul>
-<hr>
-<h2 id="方法二-监听键盘的弹出与收回通知"><a href="#方法二-监听键盘的弹出与收回通知" class="headerlink" title="方法二: 监听键盘的弹出与收回通知"></a>方法二: 监听键盘的弹出与收回通知</h2><p>方法二采用监听键盘事件, 当键盘弹出时上移tableView底部到键盘顶部, 当键盘收起时将tableView移回.</p>
-<ul>
-<li><strong>特点</strong>: 灵活性较强.</li>
-</ul>
-<hr>
-<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p><strong><em>看实际需求, 如果设计师给的图是普通的登录注册, 用第一种方式, 移动固定大小就搞定; 如果像聊天界面那种需要看到最下面的内容时, 坚决选第二种.</em></strong></p>
-<p><a href="">点击下载本文对应代码</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;当我们需要处理键盘事件, 如登录或者输入信息的页面, 会让tableView向上移动, 以至于不让键盘挡住输入框。 这样做能提升用户体验。 同理ScrolView, TextField/TextView等, 本文主要记录几种解决办法。&lt;/p&gt;
-    
-    </summary>
-    
-    
-      <category term="iOS" scheme="http://blog.xigulu.com/tags/iOS/"/>
     
   </entry>
   
